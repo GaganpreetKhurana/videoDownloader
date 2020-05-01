@@ -71,7 +71,7 @@ def printPlaylistMenu(details):
 
 
 def download(details, options):
-    options['skip_download'] = True
+    options['skip_download'] = False
     print()
     try:
         singlesToDownload = list(map(int, input("List ID's of Videos to download separated by space: ").split()))
@@ -131,17 +131,18 @@ def extractor(link):
         details = extractDetailsPlaylist(infoDict, link)
         # printPlaylistDetails(details)
         printPlaylistMenu(details)
-    download(details.copy(), options.copy())
+    # download(details.copy(), options.copy())
 
 
-print('Press "-" to QUIT')
-url = input('Enter Playlist/Video Url: ')
-# url='https://www.youtube.com/watch?v=oUUyuW5PnhM&list=PL4x7Of-X4XhihdpCA1wCUNB6KEp1FNVms'
-# url='https://www.youtube.com/watch?v=oUUyuW5PnhM'
-if url == '-':
-    print("Good Bye")
-else:
-    try:
-        extractor(url)
-    except:
-        print("An Error Occurred")
+if __name__ == '__main__':
+    print('Press "-" to QUIT')
+    url = input('Enter Playlist/Video Url: ')
+    # url='https://www.youtube.com/watch?v=oUUyuW5PnhM&list=PL4x7Of-X4XhihdpCA1wCUNB6KEp1FNVms'
+    # url='https://www.youtube.com/watch?v=oUUyuW5PnhM'
+    if url == '-':
+        print("Good Bye")
+    else:
+        try:
+            extractor(url)
+        except:
+            print("An Error Occurred")
