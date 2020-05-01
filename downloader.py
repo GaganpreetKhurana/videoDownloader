@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import os
+
 import youtube_dl
 
 count = 0
@@ -98,6 +100,8 @@ def download(details, options):
             with youtube_dl.YoutubeDL(options) as ydl:
                 ydl.download([urlList[id]['url']])
             print('Downloaded : ', id)
+            continue
+        print("Failed", id)
 
 
 def extractor(link):
@@ -108,8 +112,14 @@ def extractor(link):
         'writesubtitles': False,
         'writeautomaticsub': False,
         'allsubtitles': False,
-        'skip_download': True,
+        'skip_download': True
     }
+    pathToBeSaved = input('Enter Download Path: ')
+    if os.path.isdir(pathToBeSaved):
+        options['outtmpl'] = pathToBeSaved + '/%(title)s.%(ext)s'
+    else:
+        print("Invalid Path ")
+        return
     with youtube_dl.YoutubeDL(options) as ydl:
         infoDict = ydl.extract_info(link, download=False)
     type = extractType(infoDict)
