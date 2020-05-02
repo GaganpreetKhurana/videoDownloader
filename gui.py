@@ -10,14 +10,6 @@ type = None
 details = {}
 
 
-def printText():
-    global link, location
-    print(link.get())
-    print(location)
-    for i in videos:
-        print(i, videos[i][1].get(), videos[i][2].get())
-    print()
-
 
 def onDownload():
     options = {
@@ -30,16 +22,13 @@ def onDownload():
         'skip_download': True
     }
     global details
-    for i in videos:
-        print(i, videos[i][1].get(), videos[i][2].get())
-    print()
     singlesToDownload = []
     for i in videos:
         if videos[i][2].get() == 1:
             singlesToDownload.append(videos[i][1].get())
-    print("DownLoading")
+    print("DownLoading Started")
     downloader.download(details, options, singlesToDownload)
-    print("Downloaded")
+    print("Downloading Finished")
 
 
 def openDialogBox():
