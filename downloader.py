@@ -96,11 +96,14 @@ def download(details, options, singlesToDownload=None):
             if 'title' in urlList[id]:
                 print('Downloading : ', urlList[id]['title'], " :: ", id)
             else:
-                print('Downloading : ', id)
+                print('Downloading : ', urlList['title'])
             options['format'] = urlList[id]['formatId']
             with youtube_dl.YoutubeDL(options) as ydl:
                 ydl.download([urlList[id]['url']])
-            print('Downloaded : ', id)
+            if 'title' in urlList[id]:
+                print('Download Complete : ', urlList[id]['title'], " :: ", id)
+            else:
+                print('Download Complete : ', urlList['title'])
             continue
         print("Failed", id)
 
