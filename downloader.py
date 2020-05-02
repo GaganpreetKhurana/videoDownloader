@@ -71,7 +71,7 @@ def printPlaylistMenu(details):
 
 
 def download(details, options, singlesToDownload=None):
-    options['skip_download'] = True
+    options['skip_download'] = False
     print()
     if singlesToDownload is None:
         try:
