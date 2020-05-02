@@ -7,21 +7,12 @@ import youtube_dl
 import downloader
 
 type = None
-details = {}
-
+details = dict()
+options = dict()
 
 
 def onDownload():
-    options = {
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-        'writesubtitles': False,
-        'writeautomaticsub': False,
-        'allsubtitles': False,
-        'skip_download': True
-    }
-    global details
+    global details, options
     singlesToDownload = []
     for i in videos:
         if videos[i][2].get() == 1:
@@ -66,7 +57,7 @@ def printPlaylist(details, titleLable, urlLable):
 
 
 def getUrlLocation():
-    global videoListBox, details, videos, location, link
+    global videoListBox, details, videos, location, link, options
     videoListBox.destroy()
     canvas = Canvas(baseFrame)
     canvas.grid(row=4, columnspan=50, rowspan=10)

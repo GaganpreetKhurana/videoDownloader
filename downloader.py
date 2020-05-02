@@ -108,7 +108,7 @@ def download(details, options, singlesToDownload=None):
         print("Failed", id)
 
 
-def extractor(link):
+def extractor(link, pathToBeSaved=None):
     options = {
         'quiet': True,
         'no_warnings': True,
@@ -118,7 +118,8 @@ def extractor(link):
         'allsubtitles': False,
         'skip_download': True
     }
-    pathToBeSaved = input('Enter Download Path: ')
+    if pathToBeSaved is None:
+        pathToBeSaved = input('Enter Download Path: ')
     if os.path.isdir(pathToBeSaved):
         options['outtmpl'] = pathToBeSaved + '/%(title)s.%(ext)s'
     else:
