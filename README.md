@@ -1,4 +1,4 @@
-# videoeDownloader
+# videoDownloader
 GUI
 
   - For GUI run gui.py
