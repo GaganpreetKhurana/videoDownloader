@@ -5,13 +5,30 @@ import os
 import youtube_dl
 
 count = 0
+'''
+stores number of videos*formats for id 
+'''
 
 
 def extractType(infoDict):
+    '''
+    return type of link(playlist/None(single video))
+    :param infoDict: Dictionary of details from
+    :return: type
+    '''
     return infoDict.get('_type', None)
 
 
 def extractDetailsSingle(infoDict, url):
+    '''
+    extract video details from info dict
+    :param infoDict: details extracted by youtube_dl
+    :param url: url provided
+    :return: details: dictionary containing video details
+                    title
+                    url
+                    id(count) :dictionary: formatId,format,extension,url,bool videoAvailable,bool audioAvailable,
+    '''
     details = dict()
     global count
     details['title'] = infoDict['title']
@@ -32,6 +49,19 @@ def extractDetailsSingle(infoDict, url):
 
 
 def extractDetailsPlaylist(infoDict, playlistUrl):
+    '''
+    extract playlist details from info dict and call extractDetailsSingle for each video
+
+    :param infoDict: details extracted by youtube_dl
+    :param playlistUrl: url of playlist
+    :return: details: playlist title
+                      playlist Url
+                      singles: dictionary
+                                title of video: dictionary containing video details
+                                                title
+                                                url
+                                                id(count) :dictionary: formatId,format,extension,url,bool videoAvailable,bool audioAvailable,
+    '''
     details = dict()
     details['playlistTitle'] = infoDict['title']
     details['playlistUrl'] = playlistUrl
@@ -42,11 +72,21 @@ def extractDetailsPlaylist(infoDict, playlistUrl):
 
 
 def printSingleDetails(details):
+    '''
+    Print details of each video
+    :param details: dictionary of details of each single
+    :return: None
+    '''
     for eachFormat in details:
         print(eachFormat, details[eachFormat])
 
 
 def printPlaylistDetails(details):
+    '''
+    print details of each playlist and call printSingleDetails for each video
+    :param details: dictionary of details of playlist
+    :return: None
+    '''
     print('Playlist Title: ', details['playlistTitle'])
     print('Playlist URL: ', details['playlistUrl'])
     print()
@@ -56,6 +96,12 @@ def printPlaylistDetails(details):
 
 
 def printSingleMenu(details):
+    '''
+    Print Menu for video
+    id format
+    :param details: dictionary about video
+    :return: None
+    '''
     print("Title: ", details['title'])
     for eachFormat in details:
         if eachFormat != 'title' and eachFormat != 'url':
@@ -63,6 +109,11 @@ def printSingleMenu(details):
 
 
 def printPlaylistMenu(details):
+    '''
+    Print Menu for playlist and call printSingleMenu for each video
+    :param details: dictionary about playlist
+    :return: None
+    '''
     print('Playlist Title: ', details['playlistTitle'])
     print()
     for eachSingle in details['singles']:
@@ -71,15 +122,22 @@ def printPlaylistMenu(details):
 
 
 def download(details, options, singlesToDownload=None):
+    '''
+    Download videos
+    :param details: dictionary about playlist/video
+    :param options: dictionary of options for youtubeDL
+    :param singlesToDownload: list of ids of format (video) to download
+    :return: None
+    '''
     options['skip_download'] = False
     print()
-    if singlesToDownload is None:
+    if singlesToDownload is None:  # for non gui
         try:
             singlesToDownload = list(map(int, input("List ID's of Videos to download separated by space: ").split()))
         except:
             print("Invalid")
             return
-    if 'singles' in details:
+    if 'singles' in details:  # for playlist
         urlList = dict()
         details = details['singles']
         for titles in details:
@@ -109,6 +167,12 @@ def download(details, options, singlesToDownload=None):
 
 
 def extractor(link, pathToBeSaved=None):
+    '''
+    extracts details
+    :param link: url of link of playlist
+    :param pathToBeSaved: path where videos will be saved
+    :return: None
+    '''
     options = {
         'quiet': True,
         'no_warnings': True,
@@ -118,16 +182,20 @@ def extractor(link, pathToBeSaved=None):
         'allsubtitles': False,
         'skip_download': True
     }
+    gui = True
     if pathToBeSaved is None:
+        gui = False
         pathToBeSaved = input('Enter Download Path: ')
-    if os.path.isdir(pathToBeSaved):
+    if os.path.isdir(pathToBeSaved):  # check is directory exists
         options['outtmpl'] = pathToBeSaved + '/%(title)s.%(ext)s'
     else:
         print("Invalid Path ")
         return
+
     with youtube_dl.YoutubeDL(options) as ydl:
         infoDict = ydl.extract_info(link, download=False)
     type = extractType(infoDict)
+
     if type is None:
         details = extractDetailsSingle(infoDict, link)
         # printSingleDetails(details)
@@ -136,7 +204,9 @@ def extractor(link, pathToBeSaved=None):
         details = extractDetailsPlaylist(infoDict, link)
         # printPlaylistDetails(details)
         printPlaylistMenu(details)
-    # download(details.copy(), options.copy())
+
+    if gui is False:
+        download(details.copy(), options.copy())
 
 
 if __name__ == '__main__':

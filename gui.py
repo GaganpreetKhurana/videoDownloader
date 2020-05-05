@@ -7,22 +7,43 @@ import youtube_dl
 import downloader
 
 type = None
+'''
+specifies type of url
+playlist or None(single video)
+'''
 details = dict()
+'''
+details:dictionary containing the information about all the videos
+'''
 options = dict()
+'''
+options: dictionary containing options to be passed to the youtubeDL object
+'''
 
 
 def onDownload():
+    '''
+    Starts Downloading the Selected Videos
+    
+    :return: None
+    '''
     global details, options
-    singlesToDownload = []
+    singlesToDownload = []  # contains id of videos to be downloaded
     for i in videos:
-        if videos[i][2].get() == 1:
+        if videos[i][2].get() == 1:  # selected videos
             singlesToDownload.append(videos[i][1].get())
     print("DownLoading Started")
-    downloader.download(details, options, singlesToDownload)
+    downloader.download(details, options, singlesToDownload)  # call download function from downloader
     print("Downloading Finished")
 
 
 def openDialogBox():
+    '''
+    To open file dialog box to select location where files should be saved
+    locationEntry : Entry Object for location
+    location:actual path
+    :return: None
+    '''
     global location, locationEntry
     location = filedialog.askdirectory(parent=root,
                                        initialdir=location,
@@ -32,13 +53,23 @@ def openDialogBox():
 
 
 def printSingle(details, titleLable):
-    if type is None:
+    '''
+    for each format of the video it makes a dictionary with key as video name 
+    :param details: details about all videos
+    :param titleLable: Label Object for title of playlist/video
+    :return: None
+    '''
+    if type is None:  # if url specified is a single video
         global title
         title = details['title']
         titleLable.config(text=title)
 
     global videos
     videos[details['title']] = [[], IntVar(), IntVar(value=1), []]
+    '''
+    videos:key:title of video
+            value : list of [formats],variable for radioButton,variable for checkBox,[ids of each format]
+    '''
     for eachFormat in details:
         if eachFormat != 'title' and eachFormat != 'url':
             videos[details['title']][0].append(details[eachFormat]['format'])
@@ -47,6 +78,14 @@ def printSingle(details, titleLable):
 
 
 def printPlaylist(details, titleLable, urlLable):
+    '''
+    changes title and url labels to playlists title and url
+    For each video in playlist calls printSingle to add video details to videos dictionary
+    :param details: dictionary:details of all videos
+    :param titleLable: title Label
+    :param urlLable: Url Label
+    :return: None
+    '''
     title = details['playlistTitle']
     titleLable.config(text=title)
     videoLink = details['playlistUrl']
@@ -57,6 +96,10 @@ def printPlaylist(details, titleLable, urlLable):
 
 
 def getUrlLocation():
+    '''
+    gets URL and path when submit is clicked
+    :return: None
+    '''
     global videoListBox, details, videos, location, link, options
     videoListBox.destroy()
     canvas = Canvas(baseFrame)
@@ -78,16 +121,23 @@ def getUrlLocation():
         'allsubtitles': False,
         'skip_download': True
     }
+
+    # Checks Path Validity
     if os.path.isdir(location):
         options['outtmpl'] = location + '/%(title)s.%(ext)s'
     else:
         messagebox.showinfo("ERROR", "INVALID INPUT")
         return
+
+    # extract information
     with youtube_dl.YoutubeDL(options) as ydl:
         infoDict = ydl.extract_info(link.get(), download=False)
+
+    # extracts type by call extract type function
     global type
     type = downloader.extractType(infoDict)
 
+    # Creates Empty Labels
     titleLable = Label(videoListBox, text="")
     urlLable = Label(videoListBox, text="")
 
@@ -103,6 +153,9 @@ def getUrlLocation():
     button = list()
     row = 6
     col = 0
+
+    # prints menu:Creates Checkboxes and radioButtons,Download Button
+
     checkBox = list()
     for video in videos:
         checkBox.append(Checkbutton(videoListBox, text=video, variable=videos[video][2]))
@@ -119,6 +172,8 @@ def getUrlLocation():
     download = Button(videoListBox, text="Download", command=onDownload)
     download.grid(row=row, columnspan=3)
 
+
+# creates Gui
 
 root = Tk()
 root.title("Video Downloader")
